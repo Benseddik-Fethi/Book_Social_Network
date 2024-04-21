@@ -1,0 +1,70 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/book_network_api
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+    show-sql: true
+    database: postgresql
+    generate-ddl: true
+    open-in-view: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: classpath:db/db.changelog-master.xml
+    contexts: dev, faker
+    enabled: true
+  mail:
+    host: localhost
+    port: 1025
+    username: fethi
+    password: fethi
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          trust: "*"
+        auth: true
+        starttls:
+          enable: true
+        connectiontimeout: 5000
+        timeout: 3000
+        writetimeout: 5000
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/mail/
+    suffix: .html
+  output:
+    ansi:
+      enabled: always
+
+application:
+  security:
+    cors:
+      origin: http://localhost:5173
+      max-age: 3600
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration-time: 86400000 # 1 day
+      refresh-token:
+        expiration-time: 2592000000 # 30 days
+  mailing:
+    front-end:
+      activation-url: http://localhost:4200/activate-account
+  role:
+    default: ROLE_USER
+  front:
+    url: http://localhost:5173
+
+logging:
+  level:
+    liquibase: INFO
+    com.benseddik.book: DEBUG
+
