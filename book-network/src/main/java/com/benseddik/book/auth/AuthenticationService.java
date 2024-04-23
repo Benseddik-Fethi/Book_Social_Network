@@ -46,8 +46,6 @@ public class AuthenticationService {
                 .lastName(registerRequest.lastName())
                 .email(registerRequest.email())
                 .password(passwordEncoder.encode(registerRequest.password()))
-                .accountLocked(false)
-                .enabled(false)
                 .roles(Set.of(userRole))
                 .build();
         userRepository.save(user);

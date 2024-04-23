@@ -17,7 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Role implements Serializable {
+public class Role extends AbstractAuditingEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = -1773008266241902170L;
     @Id

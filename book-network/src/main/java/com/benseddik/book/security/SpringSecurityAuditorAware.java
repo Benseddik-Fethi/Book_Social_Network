@@ -26,7 +26,7 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
     public Optional<String> getCurrentAuditor() {
         Optional<String> user = SecurityUtils.getCurrentUserSubOptional();
         if (user.isPresent() && (user.get().equals("anonymousUser"))) {
-            return Optional.of("anonymousUser");
+            return Optional.of("System");
 
         }
         return user;

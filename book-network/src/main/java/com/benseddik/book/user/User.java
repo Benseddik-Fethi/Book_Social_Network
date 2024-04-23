@@ -1,6 +1,8 @@
 package com.benseddik.book.user;
 
+import com.benseddik.book.book.Book;
 import com.benseddik.book.config.AbstractAuditingEntity;
+import com.benseddik.book.history.BookTransactionHistory;
 import com.benseddik.book.role.Role;
 import com.benseddik.book.utils.annotation.Password;
 import jakarta.persistence.*;
@@ -57,6 +59,12 @@ public class User extends AbstractAuditingEntity implements UserDetails, Princip
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "roles_id"))
     private Set<Role> roles = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "owner", orphanRemoval = true)
+    private Set<Book> books = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private Set<BookTransactionHistory> bookTransactionHistories = new LinkedHashSet<>();
 
     @Override
     public String getName() {
