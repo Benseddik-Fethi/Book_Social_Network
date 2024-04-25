@@ -33,6 +33,7 @@ public class SecurityConfig {
             "/webjars/**",
             "/swagger-ui.html",
     };
+
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 

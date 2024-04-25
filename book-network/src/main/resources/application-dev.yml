@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/book_network_api
     username: postgres
-    password: admin
+    password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
@@ -51,7 +51,7 @@ application:
     access-key: ERxVhFENrAMr2Ue3OY0DymIMlqSLKCYo
   security:
     cors:
-      origin: http://localhost:4200
+      origin: http://localhost:5173
       max-age: 3600
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
