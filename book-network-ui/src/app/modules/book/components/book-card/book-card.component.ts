@@ -31,7 +31,7 @@ export class BookCardComponent {
 
   get bookCover(): string | undefined {
     if (this._book.bookCover) {
-      return `data:image/jpg;base64,${this._book.bookCover}`
+      return `https://picsur.fethi.synology.me/i/${this._book.bookCover}`
     }
     return 'https://source.unsplash.com/1600x900/?book';
   }

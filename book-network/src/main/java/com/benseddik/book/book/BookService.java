@@ -36,12 +36,13 @@ public class BookService {
     private final IPicsurApiService picsurApiService;
     private final IBookMapper bookMapper;
 
-    public String save(BookRequest request, Authentication authentication) {
+    public SavedBookResponse save(BookRequest request, Authentication authentication) {
         User user = ((User) authentication.getPrincipal());
         Book book = bookMapper.toEntity(request);
         book.setOwner(user);
         book = bookRepository.save(book);
-        return book.getUuid().toString();
+        log.info("Book saved: {}", book.getUuid());
+        return new SavedBookResponse(String.valueOf(book.getUuid()));
     }
 
     public BookResponse findBookByUuid(String uuid) {
@@ -63,7 +64,7 @@ public class BookService {
     public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication authentication) {
         User user = ((User) authentication.getPrincipal());
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Book> books = bookRepository.findAll(withOwnerUuid(String.valueOf(user.getUuid())), pageable);
+        Page<Book> books = bookRepository.findAll(withOwnerUuid(user.getUuid()), pageable);
         List<BookResponse> bookResponses = books.map(bookMapper::toBookResponse).getContent();
         return new PageResponse<>(bookResponses, books.getNumber(), books.getSize(), books.getTotalElements(),
                 books.getTotalPages(), books.isFirst(), books.isLast());
@@ -184,7 +185,7 @@ public class BookService {
             throw new OperationNotPermittedException("You cannot update book cover picture");
         }
         PicsurSuccessResponse picsurSuccessResponse = picsurApiService.uploadImage(file).getBody();
-        if(picsurSuccessResponse == null) {
+        if (picsurSuccessResponse == null) {
             throw new OperationNotPermittedException("Failed to upload book cover picture");
         }
         book.setBookCover(picsurSuccessResponse.getData().getId());

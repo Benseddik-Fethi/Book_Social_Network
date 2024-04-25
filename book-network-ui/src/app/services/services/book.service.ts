@@ -30,6 +30,7 @@ import { returnBorrowBook } from '../fn/book/return-borrow-book';
 import { ReturnBorrowBook$Params } from '../fn/book/return-borrow-book';
 import { saveBook } from '../fn/book/save-book';
 import { SaveBook$Params } from '../fn/book/save-book';
+import { SavedBookResponse } from '../models/saved-book-response';
 import { updateArchivedStatus } from '../fn/book/update-archived-status';
 import { UpdateArchivedStatus$Params } from '../fn/book/update-archived-status';
 import { updateShareableStatus } from '../fn/book/update-shareable-status';
@@ -81,7 +82,7 @@ export class BookService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  saveBook$Response(params: SaveBook$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+  saveBook$Response(params: SaveBook$Params, context?: HttpContext): Observable<StrictHttpResponse<SavedBookResponse>> {
     return saveBook(this.http, this.rootUrl, params, context);
   }
 
@@ -91,9 +92,9 @@ export class BookService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  saveBook(params: SaveBook$Params, context?: HttpContext): Observable<string> {
+  saveBook(params: SaveBook$Params, context?: HttpContext): Observable<SavedBookResponse> {
     return this.saveBook$Response(params, context).pipe(
-      map((r: StrictHttpResponse<string>): string => r.body)
+      map((r: StrictHttpResponse<SavedBookResponse>): SavedBookResponse => r.body)
     );
   }
 

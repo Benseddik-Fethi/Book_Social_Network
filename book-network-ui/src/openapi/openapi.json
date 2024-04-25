@@ -133,7 +133,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/SavedBookResponse"
                 }
               }
             }
@@ -680,6 +680,14 @@
           },
           "shareable": {
             "type": "boolean"
+          }
+        }
+      },
+      "SavedBookResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string"
           }
         }
       },
