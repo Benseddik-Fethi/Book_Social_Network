@@ -7,12 +7,13 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 import { BookRequest } from '../../models/book-request';
+import { SavedBookResponse } from '../../models/saved-book-response';
 
 export interface SaveBook$Params {
       body: BookRequest
 }
 
-export function saveBook(http: HttpClient, rootUrl: string, params: SaveBook$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+export function saveBook(http: HttpClient, rootUrl: string, params: SaveBook$Params, context?: HttpContext): Observable<StrictHttpResponse<SavedBookResponse>> {
   const rb = new RequestBuilder(rootUrl, saveBook.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
@@ -23,7 +24,7 @@ export function saveBook(http: HttpClient, rootUrl: string, params: SaveBook$Par
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<string>;
+      return r as StrictHttpResponse<SavedBookResponse>;
     })
   );
 }

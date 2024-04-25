@@ -1,10 +1,14 @@
 <div
-  class="card"
-  style="width: 20rem">
+  class="card border-2"
+  style="width: 20rem"
+  [class.border-success]="book.shareable"
+  [class.border-warning]="book.archived"
+>
   <img [src]="bookCover" class="card-img-top" alt="" height="200">
   <div class="card-body overflow-scroll">
     <h5 class="card-title fs-6 text-nowrap fw-bold mb-1"><i class="fa-solid fa-book">&nbsp;</i>{{ book.title }}</h5>
-    <h5 class="card-subtitle fs-6 text-secondary mb-1"><i class="fa-solid fa-user-check">&nbsp;</i>{{ book.authorName }}</h5>
+    <h5 class="card-subtitle fs-6 text-secondary mb-1"><i class="fa-solid fa-user-check">&nbsp;</i>{{ book.authorName }}
+    </h5>
     <h6 class="card-subtitle fs-6 text-secondary mb-1"><i class="fas fa-code">&nbsp;</i>{{ book.isbn }}</h6>
     <h6 class="card-subtitle fs-6 text-secondary"><i
       class="fas fa-user">&nbsp;</i>{{ book.ownerFirstName }}&nbsp;{{ book.ownerLastName }}</h6>

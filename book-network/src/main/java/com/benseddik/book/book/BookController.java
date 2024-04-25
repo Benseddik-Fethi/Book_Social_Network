@@ -24,7 +24,7 @@ public class BookController {
 
 
     @PostMapping
-    public ResponseEntity<String> saveBook(@RequestBody @Valid BookRequest request, Authentication authentication) {
+    public ResponseEntity<SavedBookResponse> saveBook(@RequestBody @Valid BookRequest request, Authentication authentication) {
         log.info("Book saved: {}", request);
         return ResponseEntity.ok(bookService.save(request, authentication));
     }
