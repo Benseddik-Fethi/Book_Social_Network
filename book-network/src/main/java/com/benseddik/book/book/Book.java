@@ -1,11 +1,15 @@
 package com.benseddik.book.book;
 
-import com.benseddik.book.config.AbstractAuditingEntity;
+import com.benseddik.book.common.AbstractAuditingEntity;
 import com.benseddik.book.feedback.Feedback;
 import com.benseddik.book.history.BookTransactionHistory;
 import com.benseddik.book.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.util.ArrayList;
@@ -15,7 +19,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -40,7 +44,7 @@ public class Book extends AbstractAuditingEntity {
     @Column(name = "synopsis", nullable = false)
     private String synopsis;
 
-    @Column(name = "book_cover", nullable = false)
+    @Column(name = "book_cover")
     private String bookCover;
 
     @Column(name = "archived", nullable = false)
@@ -59,4 +63,15 @@ public class Book extends AbstractAuditingEntity {
     @OneToMany(mappedBy = "book", orphanRemoval = true)
     private Set<BookTransactionHistory> bookTransactionHistories = new LinkedHashSet<>();
 
+    @Transient
+    public double getAverageRating() {
+        if(feedbacks.isEmpty()) {
+            return 0.0;
+        }
+        var rate =  feedbacks.stream()
+                .mapToDouble(Feedback::getNote)
+                .average()
+                .orElse(0.0);
+        return Math.round(rate * 10.0) / 10.0;
+    }
 }

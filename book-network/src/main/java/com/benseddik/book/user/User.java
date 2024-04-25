@@ -1,14 +1,18 @@
 package com.benseddik.book.user;
 
 import com.benseddik.book.book.Book;
-import com.benseddik.book.config.AbstractAuditingEntity;
+import com.benseddik.book.common.AbstractAuditingEntity;
 import com.benseddik.book.history.BookTransactionHistory;
 import com.benseddik.book.role.Role;
 import com.benseddik.book.utils.annotation.Password;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +26,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

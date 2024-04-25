@@ -1,12 +1,16 @@
-package com.benseddik.book.config;
+package com.benseddik.book.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -15,13 +19,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @MappedSuperclass
+@SuperBuilder
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AbstractAuditingEntity implements Serializable {
 
@@ -49,5 +55,10 @@ public abstract class AbstractAuditingEntity implements Serializable {
     private LocalDateTime lastModifiedDate;
 
     @Column(name = "uuid", updatable = false, nullable = false, unique = true)
-    private UUID uuid = UUID.randomUUID();
+    private UUID uuid ;
+
+    @PrePersist
+    public void prePersist() {
+        this.uuid = UUID.randomUUID();
+    }
 }

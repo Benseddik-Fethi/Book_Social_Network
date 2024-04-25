@@ -46,9 +46,12 @@ spring:
       enabled: always
 
 application:
+  picsur:
+    url: https://picsur.fethi.synology.me
+    access-key: ERxVhFENrAMr2Ue3OY0DymIMlqSLKCYo
   security:
     cors:
-      origin: http://localhost:5173
+      origin: http://localhost:4200
       max-age: 3600
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
@@ -67,4 +70,5 @@ logging:
   level:
     liquibase: INFO
     com.benseddik.book: DEBUG
+    org.springframework.cloud.openfeign: ERROR
 

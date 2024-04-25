@@ -1,7 +1,11 @@
-package com.benseddik.book.security;
+package com.benseddik.book.config;
 
+import com.benseddik.book.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
@@ -24,12 +28,13 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
      */
     @Override
     public Optional<String> getCurrentAuditor() {
-        Optional<String> user = SecurityUtils.getCurrentUserSubOptional();
-        if (user.isPresent() && (user.get().equals("anonymousUser"))) {
-            return Optional.of("System");
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null ||
+                !authentication.isAuthenticated() ||
+                authentication instanceof AnonymousAuthenticationToken) {
+            return Optional.of("aa000000-a0a0-0000-a000-0a00a0aaa0aa");
         }
-        return user;
+        User userPrincipal = (User) authentication.getPrincipal();
+        return Optional.ofNullable(userPrincipal.getUuid().toString());
     }
-
 }

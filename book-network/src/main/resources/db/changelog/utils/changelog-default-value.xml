@@ -8,20 +8,20 @@
     <property name="now" value="current_timestamp" dbms="postgresql"/>
     <property name="uuid_function" value="gen_random_uuid()" dbms="postgresql"/>
     <changeSet id="1713851378415-default-value-role" author="fethi">
-        <addDefaultValue tableName="role" columnName="created_by" defaultValue="System"/>
-        <addDefaultValue tableName="role" columnName="last_modified_by" defaultValue="System"/>
+        <addDefaultValue tableName="role" columnName="created_by" defaultValue="aa000000-a0a0-0000-a000-0a00a0aaa0aa"/>
+        <addDefaultValue tableName="role" columnName="last_modified_by" defaultValue="aa000000-a0a0-0000-a000-0a00a0aaa0aa"/>
         <addDefaultValue tableName="role" columnName="created_date" defaultValueDate="${now}"/>
         <addDefaultValue tableName="role" columnName="last_modified_date" defaultValueDate="${now}"/>
         <addDefaultValue tableName="role" columnName="uuid" defaultValueComputed="${uuid_function}"/>
-        <addDefaultValue tableName="_user" columnName="created_by" defaultValue="System"/>
-        <addDefaultValue tableName="_user" columnName="last_modified_by" defaultValue="System"/>
+        <addDefaultValue tableName="_user" columnName="created_by" defaultValue="aa000000-a0a0-0000-a000-0a00a0aaa0aa"/>
+        <addDefaultValue tableName="_user" columnName="last_modified_by" defaultValue="aa000000-a0a0-0000-a000-0a00a0aaa0aa"/>
         <addDefaultValue tableName="_user" columnName="created_date" defaultValueDate="${now}"/>
         <addDefaultValue tableName="_user" columnName="last_modified_date" defaultValueDate="${now}"/>
         <addDefaultValue tableName="_user" columnName="uuid" defaultValueComputed="${uuid_function}"/>
         <addDefaultValue tableName="_user" columnName="enabled" defaultValueBoolean="false"/>
         <addDefaultValue tableName="_user" columnName="account_locked" defaultValueBoolean="false"/>
-        <addDefaultValue tableName="book" columnName="created_by" defaultValue="System"/>
-        <addDefaultValue tableName="book" columnName="last_modified_by" defaultValue="System"/>
+        <addDefaultValue tableName="book" columnName="created_by" defaultValue="aa000000-a0a0-0000-a000-0a00a0aaa0aa"/>
+        <addDefaultValue tableName="book" columnName="last_modified_by" defaultValue="aa000000-a0a0-0000-a000-0a00a0aaa0aa"/>
         <addDefaultValue tableName="book" columnName="created_date" defaultValueDate="${now}"/>
         <addDefaultValue tableName="book" columnName="last_modified_date" defaultValueDate="${now}"/>
         <addDefaultValue tableName="book" columnName="uuid" defaultValueComputed="${uuid_function}"/>
