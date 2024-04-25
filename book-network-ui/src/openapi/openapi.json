@@ -662,9 +662,9 @@
         ],
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
           },
           "title": {
             "type": "string"

@@ -38,12 +38,19 @@ public class BookService {
 
     public SavedBookResponse save(BookRequest request, Authentication authentication) {
         User user = ((User) authentication.getPrincipal());
-        Book book = bookMapper.toEntity(request);
-        book.setOwner(user);
+        Book book;
+        if (request.uuid() != null) {
+            book = bookRepository.findByUuid(request.uuid())
+                    .orElseThrow(() -> new EntityNotFoundException("Book not found : " + request.uuid()));
+        } else {
+            book = bookMapper.toEntity(request);
+            book.setOwner(user);
+        }
         book = bookRepository.save(book);
         log.info("Book saved: {}", book.getUuid());
         return new SavedBookResponse(String.valueOf(book.getUuid()));
     }
+
 
     public BookResponse findBookByUuid(String uuid) {
         return bookRepository.findByUuid(UUID.fromString(uuid))

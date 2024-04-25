@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NgForOf, NgIf} from "@angular/common";
 import {BookRequest} from "../../../../services/models/book-request";
 import {FormsModule} from "@angular/forms";
@@ -17,8 +17,9 @@ import {BookService} from "../../../../services/services/book.service";
   templateUrl: './manage-book.component.html',
   styleUrl: './manage-book.component.scss'
 })
-export class ManageBookComponent {
+export class ManageBookComponent implements OnInit {
   errorMsg: Array<string> = [];
+  baseImageUrl: string = 'https://picsur.fethi.synology.me/i/';
   bookRequest: BookRequest = {
     authorName: '',
     isbn: '',
@@ -36,8 +37,26 @@ export class ManageBookComponent {
   }
 
   ngOnInit(): void {
-
+    const bookUuid = this.activatedRoute.snapshot.params['bookUuid'];
+    if (bookUuid) {
+      this.bookService.getBook({'book-uuid': bookUuid}).subscribe({
+        next: (book) => {
+          this.bookRequest = {
+            uuid: book.uuid as string,
+            authorName: book.authorName as string,
+            isbn: book.isbn as string,
+            synopsis: book.synopsis as string,
+            title: book.title as string,
+            shareable: book.shareable
+          }
+          if(book.bookCover) {
+            this.selectedPicture = this.baseImageUrl + book.bookCover;
+          }
+        }
+      })
+    }
   }
+
 
   saveBook() {
     this.bookService.saveBook({
@@ -56,7 +75,6 @@ export class ManageBookComponent {
         })
       },
       error: (err) => {
-        console.log(err.error);
         this.errorMsg = err.error.validationErrors;
       }
     });
@@ -64,10 +82,7 @@ export class ManageBookComponent {
 
   onFileSelected(event: any) {
     this.selectedBookCover = event.target.files[0];
-    console.log(this.selectedBookCover);
-
     if (this.selectedBookCover) {
-
       const reader = new FileReader();
       reader.onload = () => {
         this.selectedPicture = reader.result as string;
