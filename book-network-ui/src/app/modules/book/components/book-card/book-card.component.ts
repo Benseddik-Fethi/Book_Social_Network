@@ -52,6 +52,7 @@ export class BookCardComponent {
   @Output() private edit: EventEmitter<BookResponse> = new EventEmitter<BookResponse>();
   @Output() private details: EventEmitter<BookResponse> = new EventEmitter<BookResponse>();
 
+
   onShowDetails() {
     this.details.emit(this._book);
   }

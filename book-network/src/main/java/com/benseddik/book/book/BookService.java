@@ -38,19 +38,25 @@ public class BookService {
 
     public SavedBookResponse save(BookRequest request, Authentication authentication) {
         User user = ((User) authentication.getPrincipal());
-        Book book;
-        if (request.uuid() != null) {
-            book = bookRepository.findByUuid(request.uuid())
-                    .orElseThrow(() -> new EntityNotFoundException("Book not found : " + request.uuid()));
-        } else {
-            book = bookMapper.toEntity(request);
-            book.setOwner(user);
-        }
+        Book book = bookMapper.toEntity(request);
+        book.setOwner(user);
         book = bookRepository.save(book);
         log.info("Book saved: {}", book.getUuid());
         return new SavedBookResponse(String.valueOf(book.getUuid()));
     }
 
+    public SavedBookResponse update(UUID bookUuid, BookRequest request, Authentication authentication) {
+        User user = ((User) authentication.getPrincipal());
+        Book book = bookRepository.findByUuid(bookUuid)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found : " + bookUuid.toString()));
+        if (!Objects.equals(book.getOwner().getUuid(), user.getUuid())) {
+            throw new OperationNotPermittedException("You cannot update book");
+        }
+        bookMapper.partialUpdate(request, book);
+        book = bookRepository.save(book);
+        log.info("Book updated: {}", book.getUuid());
+        return new SavedBookResponse(String.valueOf(book.getUuid()));
+    }
 
     public BookResponse findBookByUuid(String uuid) {
         return bookRepository.findByUuid(UUID.fromString(uuid))
@@ -149,9 +155,9 @@ public class BookService {
         return bookTransactionHistoryRepository.save(bookTransactionHistory).getUuid();
     }
 
-    public UUID returnBorrowedBook(UUID uuid, Authentication authentication) {
-        Book book = bookRepository.findByUuid(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found : " + uuid.toString()));
+    public UUID returnBorrowedBook(UUID bookUuid, Authentication authentication) {
+        Book book = bookRepository.findByUuid(bookUuid)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found : " + bookUuid.toString()));
         if (book.isArchived() || !book.isShareable()) {
             throw new OperationNotPermittedException("You cannot return this book");
         }
@@ -160,10 +166,10 @@ public class BookService {
             throw new OperationNotPermittedException("You cannot return or borrow your own book");
         }
         BookTransactionHistory bookTransactionHistory = bookTransactionHistoryRepository
-                .findByBookUuidAndUserUuid(uuid, user.getUuid())
+                .findByBookUuidAndUserUuid(user.getUuid(), bookUuid)
                 .orElseThrow(() -> new OperationNotPermittedException("You did not borrow this book"));
         bookTransactionHistory.setReturned(true);
-        return book.getUuid();
+        return bookTransactionHistoryRepository.save(bookTransactionHistory).getUuid();
     }
 
     public UUID approveReturnBorrowedBook(UUID uuid, Authentication authentication) {
@@ -173,8 +179,8 @@ public class BookService {
             throw new OperationNotPermittedException("You cannot return this book");
         }
         User user = ((User) authentication.getPrincipal());
-        if (Objects.equals(book.getOwner().getUuid(), user.getUuid())) {
-            throw new OperationNotPermittedException("You cannot return or borrow your own book");
+        if (!Objects.equals(book.getOwner().getUuid(), user.getUuid())) {
+            throw new OperationNotPermittedException("You cannot return a book that you did not borrow");
         }
         BookTransactionHistory bookTransactionHistory = bookTransactionHistoryRepository
                 .findByBookUuidAndOwnerUuid(uuid, user.getUuid())

@@ -274,6 +274,74 @@
         }
       }
     },
+    "/books/{book-uuid}": {
+      "get": {
+        "tags": [
+          "Book"
+        ],
+        "operationId": "getBook",
+        "parameters": [
+          {
+            "name": "book-uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Book"
+        ],
+        "operationId": "updateBook",
+        "parameters": [
+          {
+            "name": "book-uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedBookResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/books/shareable/{book-uuid}": {
       "patch": {
         "tags": [
@@ -442,36 +510,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PageResponseFeedbackResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/books/{book-uuid}": {
-      "get": {
-        "tags": [
-          "Book"
-        ],
-        "operationId": "getBook",
-        "parameters": [
-          {
-            "name": "book-uuid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BookResponse"
                 }
               }
             }

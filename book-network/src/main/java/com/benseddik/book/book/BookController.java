@@ -29,6 +29,16 @@ public class BookController {
         return ResponseEntity.ok(bookService.save(request, authentication));
     }
 
+    @PatchMapping("{book-uuid}")
+    public ResponseEntity<SavedBookResponse> updateBook(
+            @PathVariable("book-uuid") String booUuid,
+            @RequestBody @Valid BookRequest request,
+            Authentication authentication) {
+        log.info("Update book: {}", request);
+        return ResponseEntity.ok(bookService.update(UUID.fromString(booUuid), request, authentication));
+    }
+
+
     @GetMapping("{book-uuid}")
     public ResponseEntity<BookResponse> getBook(
             @PathVariable("book-uuid") String uuid) {

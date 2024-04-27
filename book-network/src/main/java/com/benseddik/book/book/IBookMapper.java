@@ -9,8 +9,7 @@ public interface IBookMapper {
     BookRequest toBookRequest(Book book);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Book partialUpdate(
-            BookRequest bookRequest, @MappingTarget Book book);
+    Book partialUpdate(BookRequest bookRequest, @MappingTarget Book book);
 
     @Mapping(source = "ownerLastName", target = "owner.lastName")
     @Mapping(source = "ownerFirstName", target = "owner.firstName")
@@ -22,6 +21,5 @@ public interface IBookMapper {
 
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Book partialUpdate(
-            BookResponse bookResponse, @MappingTarget Book book);
+    Book partialUpdate(BookResponse bookResponse, @MappingTarget Book book);
 }

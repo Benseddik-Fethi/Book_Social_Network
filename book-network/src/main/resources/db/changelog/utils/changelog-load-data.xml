@@ -9,5 +9,6 @@
         <loadData tableName="role" file="db/data/role.csv" separator=";"/>
         <loadData tableName="_user" file="db/data/user.csv" separator=";"/>
         <loadData tableName="_user_roles" file="db/data/user-role.csv" separator=";"/>
+        <loadData tableName="book" file="db/data/book.csv" separator=";"/>
     </changeSet>
 </databaseChangeLog>

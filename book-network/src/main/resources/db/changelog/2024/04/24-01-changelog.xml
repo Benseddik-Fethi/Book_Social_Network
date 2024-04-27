@@ -95,7 +95,7 @@
             <column name="isbn" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="synopsis" type="VARCHAR(255)">
+            <column name="synopsis" type="VARCHAR(1000)">
                 <constraints nullable="false"/>
             </column>
             <column name="book_cover" type="VARCHAR(255)"/>

@@ -25,5 +25,6 @@
         <addDefaultValue tableName="book" columnName="created_date" defaultValueDate="${now}"/>
         <addDefaultValue tableName="book" columnName="last_modified_date" defaultValueDate="${now}"/>
         <addDefaultValue tableName="book" columnName="uuid" defaultValueComputed="${uuid_function}"/>
+        <addDefaultValue tableName="book" columnName="archived" defaultValueBoolean="false"/>
     </changeSet>
 </databaseChangeLog>

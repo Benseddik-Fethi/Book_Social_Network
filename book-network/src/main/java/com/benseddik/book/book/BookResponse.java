@@ -6,7 +6,8 @@ import java.util.UUID;
 /**
  * DTO for {@link Book}
  */
-public record BookResponse(UUID uuid, String title,
+public record BookResponse(UUID uuid,
+                           String title,
                            String authorName,
                            String isbn,
                            String synopsis,

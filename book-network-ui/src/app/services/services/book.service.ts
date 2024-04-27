@@ -33,6 +33,8 @@ import { SaveBook$Params } from '../fn/book/save-book';
 import { SavedBookResponse } from '../models/saved-book-response';
 import { updateArchivedStatus } from '../fn/book/update-archived-status';
 import { UpdateArchivedStatus$Params } from '../fn/book/update-archived-status';
+import { updateBook } from '../fn/book/update-book';
+import { UpdateBook$Params } from '../fn/book/update-book';
 import { updateShareableStatus } from '../fn/book/update-shareable-status';
 import { UpdateShareableStatus$Params } from '../fn/book/update-shareable-status';
 import { uploadBookCoverPicture } from '../fn/book/upload-book-cover-picture';
@@ -148,6 +150,56 @@ export class BookService extends BaseService {
     );
   }
 
+  /** Path part for operation `getBook()` */
+  static readonly GetBookPath = '/books/{book-uuid}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getBook()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getBook$Response(params: GetBook$Params, context?: HttpContext): Observable<StrictHttpResponse<BookResponse>> {
+    return getBook(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getBook$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getBook(params: GetBook$Params, context?: HttpContext): Observable<BookResponse> {
+    return this.getBook$Response(params, context).pipe(
+      map((r: StrictHttpResponse<BookResponse>): BookResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `updateBook()` */
+  static readonly UpdateBookPath = '/books/{book-uuid}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateBook()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateBook$Response(params: UpdateBook$Params, context?: HttpContext): Observable<StrictHttpResponse<SavedBookResponse>> {
+    return updateBook(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateBook$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateBook(params: UpdateBook$Params, context?: HttpContext): Observable<SavedBookResponse> {
+    return this.updateBook$Response(params, context).pipe(
+      map((r: StrictHttpResponse<SavedBookResponse>): SavedBookResponse => r.body)
+    );
+  }
+
   /** Path part for operation `updateShareableStatus()` */
   static readonly UpdateShareableStatusPath = '/books/shareable/{book-uuid}';
 
@@ -245,31 +297,6 @@ export class BookService extends BaseService {
   updateArchivedStatus(params: UpdateArchivedStatus$Params, context?: HttpContext): Observable<string> {
     return this.updateArchivedStatus$Response(params, context).pipe(
       map((r: StrictHttpResponse<string>): string => r.body)
-    );
-  }
-
-  /** Path part for operation `getBook()` */
-  static readonly GetBookPath = '/books/{book-uuid}';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getBook()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getBook$Response(params: GetBook$Params, context?: HttpContext): Observable<StrictHttpResponse<BookResponse>> {
-    return getBook(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getBook$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getBook(params: GetBook$Params, context?: HttpContext): Observable<BookResponse> {
-    return this.getBook$Response(params, context).pipe(
-      map((r: StrictHttpResponse<BookResponse>): BookResponse => r.body)
     );
   }
 

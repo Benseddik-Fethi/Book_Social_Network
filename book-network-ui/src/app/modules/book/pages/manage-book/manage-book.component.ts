@@ -49,7 +49,7 @@ export class ManageBookComponent implements OnInit {
             title: book.title as string,
             shareable: book.shareable
           }
-          if(book.bookCover) {
+          if (book.bookCover) {
             this.selectedPicture = this.baseImageUrl + book.bookCover;
           }
         }
@@ -90,4 +90,5 @@ export class ManageBookComponent implements OnInit {
       reader.readAsDataURL(this.selectedBookCover);
     }
   }
+
 }
