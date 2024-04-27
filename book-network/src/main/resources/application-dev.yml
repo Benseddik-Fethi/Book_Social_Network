@@ -1,3 +1,4 @@
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/book_network_api
@@ -22,21 +23,20 @@ spring:
     contexts: dev, faker
     enabled: true
   mail:
-    host: localhost
-    port: 1025
-    username: fethi
-    password: fethi
-    protocol: smtp
+    host: ${EMAIL_HOSTNAME}
+    port: 465
+    username: ${EMAIL_USER_NAME}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
-          trust: "*"
-        auth: true
-        starttls:
-          enable: true
-        connectiontimeout: 5000
-        timeout: 3000
-        writetimeout: 5000
+          auth: true
+          ssl:
+            enable: true
+            trust: "*"
+          starttls:
+            enable: true
+    protocol: smtp
   thymeleaf:
     cache: false
     prefix: classpath:/templates/mail/
@@ -51,7 +51,7 @@ application:
     access-key: ERxVhFENrAMr2Ue3OY0DymIMlqSLKCYo
   security:
     cors:
-      origin: http://localhost:4200
+      origins: ${CORS_ALLOWED_ORIGINS}
       max-age: 3600
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
@@ -71,4 +71,5 @@ logging:
     liquibase: INFO
     com.benseddik.book: DEBUG
     org.springframework.cloud.openfeign: ERROR
-
+server:
+  port: 8088

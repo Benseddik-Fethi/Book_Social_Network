@@ -1,0 +1,139 @@
+name: BSN Backend API pipeline
+
+on:
+  push:
+    branches:
+      - ci/cd
+    paths:
+      - book-network/**
+      - docker/backend/**
+      - 'docker-compose.yml'
+      - .github/workflows/*-backend.yml
+
+jobs:
+  compile:
+    name: Compile project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-jdk@v4
+        with:
+          distribution: 'corretto'
+          java-version: 17
+
+      - name: Compile project
+        run: |
+          cd book-network
+          ./mvnw clean compile
+
+
+  unit-test:
+    name: Unit test
+    runs-on: ubuntu-latest
+    needs: compile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-jdk@v4
+        with:
+          distribution: 'corretto'
+          java-version: 17
+
+      - name: Unit test
+        run: |
+          cd book-network
+          ./mvnw test
+
+  build:
+    name: Build project
+    runs-on: ubuntu-latest
+    needs: [compile, unit-test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-jdk@v4
+        with:
+          distribution: 'corretto'
+          java-version: 17
+
+      - name: Build project
+        run: |
+          cd book-network
+          ./mvnw clean package
+
+  build-image:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK 17
+        uses: actions/setup-jdk@v4
+        with:
+          distribution: 'corretto'
+          java-version: 17
+
+      - name: Extract version
+        id: extract_version
+        run: |
+          cd book-network
+          echo "VERSION=$(./mvnw -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKERHUB_USERNAME }}
+
+      - name: Build & Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: book-network
+          file: docker/backend/Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:${{ steps.extract_version.outputs.VERSION }},${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:latest
+          build-args: |
+            PROFILE=dev
+            VERSION=${{ steps.extract_version.outputs.VERSION }}
+      
+      
+  deploy:
+    name: Deploy to Docker Compose
+    runs-on: self-hosted
+    needs: build-image
+    steps:
+      - name: Create deployment folder
+        run: ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} "mkdir -p ci-cd"
+
+      - name: Copy docker-compose file
+        run: scp docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:ci-cd/docker-compose.yml
+
+      - name: Set ENV variables
+        run: |
+          ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} <<EOF
+          export ENV EMAIL_HOSTNAME=${{ secrets.EMAIL_HOST_NAME }}
+          export EMAIL_USER_NAME=${{ secrets.EMAIL_USER_NAME }}
+          export EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+          export CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
+          cd ci-cd
+          docker-compose -f docker-compose.yml pull -q
+          docker-compose -f docker-compose.yml up -d
+          EOF

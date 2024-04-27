@@ -20,7 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpMethod.*;
@@ -31,8 +31,8 @@ import static org.springframework.http.HttpMethod.*;
 public class BeansConfig {
 
     private final UserDetailsService userDetailsService;
-    @Value("${application.security.cors.origin}")
-    private String origin;
+    @Value("${application.security.cors.origins}")
+    private List<String> origins;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -79,7 +79,7 @@ public class BeansConfig {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Collections.singletonList(origin));
+        config.setAllowedOrigins(origins);
         config.setAllowedHeaders(Arrays.asList(
                 ORIGIN,
                 CONTENT_TYPE,
