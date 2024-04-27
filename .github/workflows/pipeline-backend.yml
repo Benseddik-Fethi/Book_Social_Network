@@ -1,9 +1,9 @@
-name: BSN Backend API pipeline
+name: BSN Backend API Pipeline
 
 on:
   push:
     branches:
-      - ci/cd
+      - ci/pipeline
     paths:
       - book-network/**
       - docker/backend/**
@@ -12,85 +12,56 @@ on:
 
 jobs:
   compile:
+    runs-on: self-hosted
     name: Compile project
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 17
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
+          java-version: '17'
           distribution: 'corretto'
-          java-version: 17
+
+      - name: Running Unit Tests
+        run: |
+          cd book-network
+          ./mvnw clean compile
+  build:
+    runs-on: self-hosted
+    name: Build backend
+    needs: [compile]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'corretto'
 
       - name: Compile project
         run: |
           cd book-network
           ./mvnw clean compile
 
-
-  unit-test:
-    name: Unit test
-    runs-on: ubuntu-latest
-    needs: compile
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'corretto'
-          java-version: 17
-
-      - name: Unit test
-        run: |
-          cd book-network
-          ./mvnw test
-
-  build:
-    name: Build project
-    runs-on: ubuntu-latest
-    needs: [compile, unit-test]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'corretto'
-          java-version: 17
-
-      - name: Build project
-        run: |
-          cd book-network
-          ./mvnw clean package
-
   build-image:
     name: Build Docker image
-    runs-on: ubuntu-latest
-    needs: build
+    runs-on: self-hosted
+    needs: [build]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup JDK 17
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
+          java-version: '17'
           distribution: 'corretto'
-          java-version: 17
-
-      - name: Extract version
+      - name: Extract project version
         id: extract_version
         run: |
           cd book-network
@@ -99,10 +70,10 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_TOKEN }}
-          password: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push Docker image
+      - name: Build & Push to DockerHub
         uses: docker/build-push-action@v5
         with:
           context: book-network
@@ -112,28 +83,31 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:${{ steps.extract_version.outputs.VERSION }},${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:latest
           build-args: |
             PROFILE=dev
-            VERSION=${{ steps.extract_version.outputs.VERSION }}
-      
+            APP_VERSION=${{ steps.extract_version.outputs.VERSION }}
+  
 
   deploy:
-    name: Deploy to Docker Compose
+    name: Deploy Backend
     runs-on: self-hosted
-    needs: build-image
+    needs: [build-image]
     steps:
+
       - name: Create deployment folder
-        run: ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} "mkdir -p ci-cd"
+        run: |
+          ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} 
+          mkdir -p ci-cd
 
       - name: Copy docker-compose file
-        run: scp docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:ci-cd/docker-compose.yml
+        run: scp -oStrictHostKeyChecking=no docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:ci-cd/docker-compose.yml
 
-      - name: Set ENV variables
+      - name: Set ENV variable and deploy
         run: |
           ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} <<EOF
-          export ENV EMAIL_HOSTNAME=${{ secrets.EMAIL_HOST_NAME }}
+          export EMAIL_HOST_NAME=${{ secrets.EMAIL_HOST_NAME }}
           export EMAIL_USER_NAME=${{ secrets.EMAIL_USER_NAME }}
           export EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
           export CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
           cd ci-cd
-          docker-compose -f docker-compose.yml pull -q
-          docker-compose -f docker-compose.yml up -d
+          docker compose -f docker-compose.yml pull -q
+          docker compose -f docker-compose.yml up -d
           EOF
