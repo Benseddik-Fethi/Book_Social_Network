@@ -17,7 +17,7 @@ services:
 
   bsn-api:
     container_name: bsn-api
-    image: f3th1/bsn-api:1.0.0
+    image: f3th1/bsn-api:latest
     environment:
       EMAIL_HOST_NAME: ${EMAIL_HOST_NAME}
       EMAIL_USER_NAME: ${EMAIL_USER_NAME}
