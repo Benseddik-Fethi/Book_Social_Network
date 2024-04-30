@@ -30,6 +30,7 @@ jobs:
         run: |
           cd book-network
           ./mvnw clean compile
+
   build:
     runs-on: self-hosted
     name: Build backend
@@ -93,9 +94,7 @@ jobs:
     steps:
 
       - name: Create deployment folder
-        run: |
-          ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} 
-          mkdir -p ci-cd
+        run: ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} "mkdir -p ci-cd"
 
       - name: Copy docker-compose file
         run: scp -oStrictHostKeyChecking=no docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:ci-cd/docker-compose.yml
@@ -106,8 +105,18 @@ jobs:
           export EMAIL_HOST_NAME=${{ secrets.EMAIL_HOST_NAME }}
           export EMAIL_USER_NAME=${{ secrets.EMAIL_USER_NAME }}
           export EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
-          export CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
           cd ci-cd
           docker compose -f docker-compose.yml pull -q
           docker compose -f docker-compose.yml up -d
           EOF
+#  health-check:
+#    name: API Health Check
+#    runs-on: self-hosted
+#    needs: [deploy]
+#    steps:
+#      - name: Check the docker container health status
+#        run: |
+#          if ! docker ps -a | grep bsn-api; then
+#            echo "Container is not running"
+#            exit 1
+#          fi
