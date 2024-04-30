@@ -18,6 +18,11 @@ services:
   bsn-api:
     container_name: bsn-api
     image: f3th1/bsn-api:1.0.0
+    environment:
+      EMAIL_HOST_NAME: ${EMAIL_HOST_NAME}
+      EMAIL_USER_NAME: ${EMAIL_USER_NAME}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
     ports:
       - 8088:8088
     networks:
