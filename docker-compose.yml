@@ -15,35 +15,15 @@ services:
       - book-network
     restart: unless-stopped
 
-  mail-dev:
-    container_name: mail-dev-bsn
-    image: maildev/maildev
-    ports:
-      - 1080:1080
-      - 1025:1025
-    networks:
-      - book-network
-    restart: unless-stopped
-
   bsn-api:
     container_name: bsn-api
-    image: bsn/bsn:1.0.0
+    image: f3th1/bsn-api:1.0.0
     ports:
       - 8088:8088
     networks:
       - book-network
     depends_on:
         - postgres
-
-  bsn-ui:
-    container_name: bsn-ui
-    image: bsn/bsn-ui:1.0.0
-    ports:
-      - 8080:80
-    networks:
-      - book-network
-    depends_on:
-        - bsn-api
 networks:
   book-network:
     driver: bridge

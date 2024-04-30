@@ -19,7 +19,7 @@ EXPOSE 8088
 ENV DB_URL=jdbc:postgresql://postgres-sql-bsn:5432/book_network_api
 ENV SPRING_PROFILES_ACTIVE=${PROFILE}
 ENV JAR_VERSION=${APP_VERSION}
-ENV EMAIL_HOSTNAME=missing_host_name
+ENV EMAIL_HOST_NAME=missing_host_name
 ENV EMAIL_USER_NAME=missing_user_name
 ENV EMAIL_PASSWORD=missing_password
 ENV CORS_ALLOWED_ORIGINS=http://localhost:4200
