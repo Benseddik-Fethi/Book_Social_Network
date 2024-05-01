@@ -33,13 +33,11 @@ jobs:
       - name: Build & Push to DockerHub
         uses: docker/build-push-action@v5
         with:
-          context: book-network-ui
-          file: docker/frontend/Dockerfile
+          context: book-network
+          file: docker/backend/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/bsn-ui:${{ steps.extract_version.outputs.VERSION }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/bsn-ui:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-ui:${{ steps.extract_version.outputs.VERSION }},${{ secrets.DOCKERHUB_USERNAME }}/bsn-ui:latest
 
   deploy:
     name: Deploy Frontend
