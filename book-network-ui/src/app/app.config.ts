@@ -8,6 +8,6 @@ import {httpTokenInterceptor} from "./services/interceptor/http-token.intercepto
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(withInterceptors([httpTokenInterceptor]))
+    provideHttpClient(withInterceptors([httpTokenInterceptor])),
   ]
 };
