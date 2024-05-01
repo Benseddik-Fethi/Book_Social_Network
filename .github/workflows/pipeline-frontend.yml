@@ -33,8 +33,8 @@ jobs:
       - name: Build & Push to DockerHub
         uses: docker/build-push-action@v5
         with:
-          context: book-network
-          file: docker/backend/Dockerfile
+          context: book-network-ui
+          file: docker/frontend/Dockerfile
           push: true
           platforms: linux/amd64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-ui:1.0.0,${{ secrets.DOCKERHUB_USERNAME }}/bsn-ui:latest
@@ -58,15 +58,3 @@ jobs:
           docker compose -f docker-compose.yml pull -q
           docker compose -f docker-compose.yml up -d
           EOF
-
-#  health-check:
-#    name: UI Health Check
-#    runs-on: self-hosted
-#    needs: [deploy]
-#    steps:
-#      - name: Check the docker container health status
-#        run: |
-#          if ! docker ps -a | grep bsn-ui; then
-#            echo "Container is not running"
-#            exit 1
-#          fi
