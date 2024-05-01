@@ -29,6 +29,16 @@ services:
       - book-network
     depends_on:
         - postgres
+
+  bsn-ui:
+    container_name: bsn-ui
+    image: f3th1/bsn-ui:latest
+    ports:
+      - 8080:80
+    networks:
+      - book-network
+    depends_on:
+        - bsn-api
 networks:
   book-network:
     driver: bridge
