@@ -23,10 +23,10 @@ spring:
     contexts: dev, faker
     enabled: true
   mail:
-    host: ${EMAIL_HOST_NAME}
+    host: smtp.gmail.com
     port: 465
-    username: ${EMAIL_USER_NAME}
-    password: ${EMAIL_PASSWORD}
+    username: dev.benseddik@gmail.com
+    password: ubsgfcdzdzqyqutj
     properties:
       mail:
         smtp:
@@ -51,7 +51,7 @@ application:
     access-key: ERxVhFENrAMr2Ue3OY0DymIMlqSLKCYo
   security:
     cors:
-      origins: http://localhost:4200, http://localhost:8080,http://192.168.1.155:8080, http://192.168.1.155:8088
+      origins: http://localhost:4200
       max-age: 3600
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
