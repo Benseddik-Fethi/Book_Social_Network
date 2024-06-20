@@ -17,11 +17,12 @@ services:
 
   bsn-api:
     container_name: bsn-api
-    image: f3th1/bsn-api:latest
+    build:
+      context: ./book-network
+      dockerfile: ../docker/backend/Dockerfile
     environment:
-      EMAIL_HOST_NAME: ${EMAIL_HOST_NAME}
-      EMAIL_USER_NAME: ${EMAIL_USER_NAME}
-      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+        SPRING_PROFILES_ACTIVE: dev
+
     ports:
       - 8088:8088
     networks:
@@ -31,7 +32,9 @@ services:
 
   bsn-ui:
     container_name: bsn-ui
-    image: f3th1/bsn-ui:latest
+    build:
+      context: ./book-network-ui
+      dockerfile: ../docker/frontend/Dockerfile
     ports:
       - 8080:80
     networks:
@@ -47,10 +50,17 @@ services:
     environment:
         KEYCLOAK_ADMIN: admin
         KEYCLOAK_ADMIN_PASSWORD: admin
+        KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json
+    volumes:
+      - ./imports/realm-export.json:/opt/jboss/keycloak/imports/realm-export.json
     networks:
       - book-network
     command:
       - "start-dev"
+      - "-Dkeycloak.migration.action=import"
+      - "-Dkeycloak.migration.provider=singleFile"
+      - "-Dkeycloak.migration.file=/opt/jboss/keycloak/imports/realm-export.json"
+      - "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
 networks:
   book-network:
     driver: bridge

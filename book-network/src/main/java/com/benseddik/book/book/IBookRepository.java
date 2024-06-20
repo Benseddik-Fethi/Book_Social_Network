@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface IBookRepository extends JpaRepository<Book, Long> , JpaSpecificationExecutor<Book> {
+public interface IBookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
 
 
     Optional<Book> findByUuid(UUID uuid);
@@ -19,7 +19,7 @@ public interface IBookRepository extends JpaRepository<Book, Long> , JpaSpecific
                         FROM Book book
                         WHERE book.archived = false
                         AND book.shareable = true
-                        AND book.owner.id != :id
-            """ )
-    Page<Book> findAllDisplayableBooks(Pageable pageable, Long id);
+                        AND book.createdBy != :id
+            """)
+    Page<Book> findAllDisplayableBooks(Pageable pageable, String id);
 }

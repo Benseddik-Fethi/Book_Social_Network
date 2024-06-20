@@ -14,8 +14,6 @@ public record BookResponse(UUID uuid,
                            boolean archived,
                            boolean shareable,
                            String bookCover,
-                           String ownerFirstName,
-                           String ownerLastName,
                            double rate
 )
         implements Serializable {

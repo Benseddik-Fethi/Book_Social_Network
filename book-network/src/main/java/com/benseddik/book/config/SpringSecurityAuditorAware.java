@@ -1,6 +1,6 @@
 package com.benseddik.book.config;
 
-import com.benseddik.book.user.User;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -34,7 +34,6 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
                 authentication instanceof AnonymousAuthenticationToken) {
             return Optional.of("aa000000-a0a0-0000-a000-0a00a0aaa0aa");
         }
-        User userPrincipal = (User) authentication.getPrincipal();
-        return Optional.ofNullable(userPrincipal.getUuid().toString());
+        return Optional.ofNullable(authentication.getName());
     }
 }

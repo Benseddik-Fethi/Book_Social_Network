@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <include file="db/changelog/2024/04/24-01-changelog.xml"/>
+    <include file="db/changelog/2024/06/19-01-changelog.xml"/>
     <include file="/db/changelog/utils/changelog-default-value.xml"/>
     <include file="/db/changelog/utils/changelog-load-data.xml"/>
 </databaseChangeLog>

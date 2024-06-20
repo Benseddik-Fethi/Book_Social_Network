@@ -23,10 +23,10 @@ spring:
     contexts: dev, faker
     enabled: true
   mail:
-    host: smtp.gmail.com
-    port: 465
-    username: dev.benseddik@gmail.com
-    password: ubsgfcdzdzqyqutj
+    host: localhost
+    port: 1025
+    username: fethi
+    password: fethi
     properties:
       mail:
         smtp:
@@ -44,7 +44,11 @@ spring:
   output:
     ansi:
       enabled: always
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://localhost:9090/realms/book-social-network"
 application:
   picsur:
     url: https://picsur.fethi.synology.me
@@ -53,14 +57,7 @@ application:
     cors:
       origins: http://localhost:4200
       max-age: 3600
-    jwt:
-      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-      expiration-time: 86400000 # 1 day
-      refresh-token:
-        expiration-time: 2592000000 # 30 days
-  mailing:
-    front-end:
-      activation-url: http://localhost:4200/activate-account
+
   role:
     default: ROLE_USER
   front:

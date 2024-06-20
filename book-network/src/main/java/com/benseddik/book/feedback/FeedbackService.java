@@ -4,7 +4,6 @@ import com.benseddik.book.book.Book;
 import com.benseddik.book.book.IBookRepository;
 import com.benseddik.book.common.PageResponse;
 import com.benseddik.book.exception.OperationNotPermittedException;
-import com.benseddik.book.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,8 +29,8 @@ public class FeedbackService {
         if (!book.isShareable() || book.isArchived()) {
             throw new OperationNotPermittedException("You cannot give a feedback on");
         }
-        User user = ((User) authentication.getPrincipal());
-        if (book.getOwner().getId().equals(user.getId())) {
+
+        if (book.getCreatedBy().equals(authentication.getName())) {
             throw new OperationNotPermittedException("You cannot give a feedback on your own book");
         }
         Feedback feedback = feedbackMapper.toEntity(request);
@@ -42,10 +41,9 @@ public class FeedbackService {
     public PageResponse<FeedbackResponse> findAllFeedbackByBookUuid(UUID bookUuid, int page, int size,
                                                                     Authentication authentication) {
         Pageable pageable = PageRequest.of(page, size);
-        User user = ((User) authentication.getPrincipal());
         Page<Feedback> feedbacks = feedbackRepository.findAllByBookUuid(bookUuid, pageable);
         List<FeedbackResponse> feedbackResponses = feedbacks.stream()
-                .map(feedback -> feedbackMapper.toFeedbackResponse(feedback, user.getUuid().toString()))
+                .map(feedback -> feedbackMapper.toFeedbackResponse(feedback, authentication.getName()))
                 .toList();
         return new PageResponse<>(feedbackResponses,
                 feedbacks.getNumber(),

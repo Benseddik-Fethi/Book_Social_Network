@@ -3,7 +3,6 @@ package com.benseddik.book.book;
 import com.benseddik.book.common.AbstractAuditingEntity;
 import com.benseddik.book.feedback.Feedback;
 import com.benseddik.book.history.BookTransactionHistory;
-import com.benseddik.book.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -53,10 +52,6 @@ public class Book extends AbstractAuditingEntity {
     @Column(name = "shareable", nullable = false)
     private boolean shareable;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
-
     @OneToMany(mappedBy = "book", orphanRemoval = true)
     private List<Feedback> feedbacks = new ArrayList<>();
 
@@ -65,10 +60,10 @@ public class Book extends AbstractAuditingEntity {
 
     @Transient
     public double getAverageRating() {
-        if(feedbacks.isEmpty()) {
+        if (feedbacks.isEmpty()) {
             return 0.0;
         }
-        var rate =  feedbacks.stream()
+        var rate = feedbacks.stream()
                 .mapToDouble(Feedback::getNote)
                 .average()
                 .orElse(0.0);

@@ -1,3 +1,0 @@
-id;first_name;last_name;email;password;account_locked;enabled;birth_date
-1;Admin;Admin;admin@local.host;$2a$10$CRjZitCVyCUgMtzQE836t.l.5tQULo2EYLZuHJLpO7lih/Li7sHQu;false;true;1969-05-27
-2;User;User;user@local.host;$2a$10$CRjZitCVyCUgMtzQE836t.l.5tQULo2EYLZuHJLpO7lih/Li7sHQu;false;true;1941-06-10

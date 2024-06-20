@@ -5,72 +5,19 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-    <changeSet id="1713946637340-1" author="fethi (generated)">
+    <changeSet id="1718802351657-1" author="fethi">
         <createSequence incrementBy="1" sequenceName="book_seq" startValue="1000"/>
     </changeSet>
-    <changeSet id="1713946637340-2" author="fethi (generated)">
+    <changeSet id="1718802351657-2" author="fethi">
         <createSequence incrementBy="1" sequenceName="feedback_seq" startValue="1000"/>
     </changeSet>
-    <changeSet id="1713946637340-3" author="fethi (generated)">
+    <changeSet id="1718802351657-3" author="fethi">
         <createSequence incrementBy="1" sequenceName="history_seq" startValue="1000"/>
     </changeSet>
-    <changeSet id="1713946637340-4" author="fethi (generated)">
+    <changeSet id="1718802351657-4" author="fethi">
         <createSequence incrementBy="1" sequenceName="role_seq" startValue="1000"/>
     </changeSet>
-    <changeSet id="1713946637340-5" author="fethi (generated)">
-        <createSequence incrementBy="1" sequenceName="token_seq" startValue="1000"/>
-    </changeSet>
-    <changeSet id="1713946637340-6" author="fethi (generated)">
-        <createSequence incrementBy="1" sequenceName="user_seq" startValue="1000"/>
-    </changeSet>
-    <changeSet id="1713946637340-7" author="fethi (generated)">
-        <createTable tableName="_user">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk__user"/>
-            </column>
-            <column name="created_by" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="DATETIME">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified_by" type="VARCHAR(50)"/>
-            <column name="last_modified_date" type="DATETIME"/>
-            <column name="uuid" type="UUID">
-                <constraints nullable="false"/>
-            </column>
-            <column name="first_name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="birth_date" type="DATE"/>
-            <column name="email" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="password" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="account_locked" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-            <column name="enabled" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-    <changeSet id="1713946637340-8" author="fethi (generated)">
-        <createTable tableName="_user_roles">
-            <column name="roles_id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk__user_roles"/>
-            </column>
-            <column name="user_id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk__user_roles"/>
-            </column>
-        </createTable>
-    </changeSet>
-    <changeSet id="1713946637340-9" author="fethi (generated)">
+    <changeSet id="1718802351657-5" author="fethi">
         <createTable tableName="book">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_book"/>
@@ -105,10 +52,9 @@
             <column name="shareable" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="owner_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1713946637340-10" author="fethi (generated)">
+    <changeSet id="1718802351657-6" author="fethi">
         <createTable tableName="book_transaction_history">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_booktransactionhistory"/>
@@ -124,7 +70,9 @@
             <column name="uuid" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="BIGINT"/>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="book_id" type="BIGINT"/>
             <column name="returned" type="BOOLEAN">
                 <constraints nullable="false"/>
@@ -134,7 +82,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1713946637340-11" author="fethi (generated)">
+    <changeSet id="1718802351657-7" author="fethi">
         <createTable tableName="feedback">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_feedback"/>
@@ -157,7 +105,7 @@
             <column name="book_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1713946637340-12" author="fethi (generated)">
+    <changeSet id="1718802351657-8" author="fethi">
         <createTable tableName="role">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_role"/>
@@ -178,74 +126,33 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1713946637340-13" author="fethi (generated)">
-        <createTable tableName="token">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_token"/>
-            </column>
-            <column name="token" type="VARCHAR(255)"/>
-            <column name="created_at" type="DATETIME"/>
-            <column name="expires_at" type="DATETIME"/>
-            <column name="validated_at" type="DATETIME"/>
-            <column name="user_id" type="BIGINT"/>
-        </createTable>
-    </changeSet>
-    <changeSet id="1713946637340-14" author="fethi (generated)">
-        <addUniqueConstraint columnNames="email" constraintName="uc__user_email" tableName="_user"/>
-    </changeSet>
-    <changeSet id="1713946637340-15" author="fethi (generated)">
-        <addUniqueConstraint columnNames="uuid" constraintName="uc__user_uuid" tableName="_user"/>
-    </changeSet>
-    <changeSet id="1713946637340-16" author="fethi (generated)">
+    <changeSet id="1718802351657-9" author="fethi">
         <addUniqueConstraint columnNames="isbn" constraintName="uc_book_isbn" tableName="book"/>
     </changeSet>
-    <changeSet id="1713946637340-17" author="fethi (generated)">
+    <changeSet id="1718802351657-10" author="fethi">
         <addUniqueConstraint columnNames="uuid" constraintName="uc_book_uuid" tableName="book"/>
     </changeSet>
-    <changeSet id="1713946637340-18" author="fethi (generated)">
+    <changeSet id="1718802351657-11" author="fethi">
         <addUniqueConstraint columnNames="uuid" constraintName="uc_booktransactionhistory_uuid"
                              tableName="book_transaction_history"/>
     </changeSet>
-    <changeSet id="1713946637340-19" author="fethi (generated)">
+    <changeSet id="1718802351657-12" author="fethi">
         <addUniqueConstraint columnNames="uuid" constraintName="uc_feedback_uuid" tableName="feedback"/>
     </changeSet>
-    <changeSet id="1713946637340-20" author="fethi (generated)">
+    <changeSet id="1718802351657-13" author="fethi">
         <addUniqueConstraint columnNames="name" constraintName="uc_role_name" tableName="role"/>
     </changeSet>
-    <changeSet id="1713946637340-21" author="fethi (generated)">
+    <changeSet id="1718802351657-14" author="fethi">
         <addUniqueConstraint columnNames="uuid" constraintName="uc_role_uuid" tableName="role"/>
     </changeSet>
-    <changeSet id="1713946637340-22" author="fethi (generated)">
+    <changeSet id="1718802351657-15" author="fethi">
         <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="book_transaction_history"
                                  constraintName="FK_BOOKTRANSACTIONHISTORY_ON_BOOK" referencedColumnNames="id"
                                  referencedTableName="book"/>
     </changeSet>
-    <changeSet id="1713946637340-23" author="fethi (generated)">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="book_transaction_history"
-                                 constraintName="FK_BOOKTRANSACTIONHISTORY_ON_USER" referencedColumnNames="id"
-                                 referencedTableName="_user"/>
-    </changeSet>
-    <changeSet id="1713946637340-24" author="fethi (generated)">
-        <addForeignKeyConstraint baseColumnNames="owner_id" baseTableName="book" constraintName="FK_BOOK_ON_OWNER"
-                                 referencedColumnNames="id" referencedTableName="_user"/>
-    </changeSet>
-    <changeSet id="1713946637340-25" author="fethi (generated)">
+    <changeSet id="1718802351657-16" author="fethi">
         <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="feedback" constraintName="FK_FEEDBACK_ON_BOOK"
                                  referencedColumnNames="id" referencedTableName="book"/>
-    </changeSet>
-    <changeSet id="1713946637340-26" author="fethi (generated)">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="token" constraintName="FK_TOKEN_ON_USER"
-                                 referencedColumnNames="id" referencedTableName="_user"/>
-    </changeSet>
-    <changeSet id="1713946637340-27" author="fethi (generated)">
-        <addForeignKeyConstraint baseColumnNames="roles_id" baseTableName="_user_roles"
-                                 constraintName="fk_userol_on_role" referencedColumnNames="id"
-                                 referencedTableName="role"/>
-    </changeSet>
-    <changeSet id="1713946637340-28" author="fethi (generated)">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="_user_roles"
-                                 constraintName="fk_userol_on_user" referencedColumnNames="id"
-                                 referencedTableName="_user"/>
     </changeSet>
 
 </databaseChangeLog>

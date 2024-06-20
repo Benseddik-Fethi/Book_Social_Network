@@ -11,8 +11,6 @@ public interface IBookMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Book partialUpdate(BookRequest bookRequest, @MappingTarget Book book);
 
-    @Mapping(source = "ownerLastName", target = "owner.lastName")
-    @Mapping(source = "ownerFirstName", target = "owner.firstName")
     Book toEntity(BookResponse bookResponse);
 
     @InheritInverseConfiguration(name = "toEntity")

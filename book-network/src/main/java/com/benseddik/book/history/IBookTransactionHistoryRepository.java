@@ -15,43 +15,43 @@ public interface IBookTransactionHistoryRepository extends
     @Query("""
             SELECT history
             FROM BookTransactionHistory history
-            WHERE history.user.uuid = :uuid
+            WHERE history.userId = :uuid
             """)
-    Page<BookTransactionHistory> findAllBorrowedBooks(Pageable pageable, UUID uuid);
+    Page<BookTransactionHistory> findAllBorrowedBooks(Pageable pageable, String uuid);
 
     @Query("""
             SELECT history
             FROM BookTransactionHistory history
-            WHERE history.book.owner.uuid = :uuid
+            WHERE history.book.createdBy = :uuid
             """)
-    Page<BookTransactionHistory> findAllReturnedBooks(Pageable pageable, UUID uuid);
+    Page<BookTransactionHistory> findAllReturnedBooks(Pageable pageable, String uuid);
 
     @Query("""
             SELECT (COUNT(*) > 0) AS isBorrowed
             FROM BookTransactionHistory history
-            WHERE history.user.uuid = :userUuid
+            WHERE history.userId = :userUuid
             AND history.book.uuid = :bookUuid
             AND history.returnApproved = false
             """)
-    boolean isAlreadyBorrowedByUser(UUID userUuid, UUID bookUuid);
+    boolean isAlreadyBorrowedByUser(String userUuid, UUID bookUuid);
 
     @Query("""
             SELECT history
             FROM BookTransactionHistory history
-            WHERE history.user.uuid = :userUuid
+            WHERE history.userId = :userUuid
             AND history.book.uuid = :bookUuid
             AND history.returned = false
             AND history.returnApproved = false
             """)
-    Optional<BookTransactionHistory> findByBookUuidAndUserUuid(UUID userUuid, UUID bookUuid);
+    Optional<BookTransactionHistory> findByBookUuidAndUserUuid(String userUuid, UUID bookUuid);
 
     @Query("""
             SELECT history
             FROM BookTransactionHistory history
             WHERE history.book.uuid = :bookUuid
-            AND history.book.owner.uuid = :ownerUuid
+            AND history.book.createdBy = :ownerUuid
             AND history.returned = true
             AND history.returnApproved = false
             """)
-    Optional<BookTransactionHistory> findByBookUuidAndOwnerUuid(UUID bookUuid, UUID ownerUuid);
+    Optional<BookTransactionHistory> findByBookUuidAndOwnerUuid(UUID bookUuid, String ownerUuid);
 }

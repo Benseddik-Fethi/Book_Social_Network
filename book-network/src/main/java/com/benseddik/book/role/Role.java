@@ -1,7 +1,7 @@
 package com.benseddik.book.role;
 
 import com.benseddik.book.common.AbstractAuditingEntity;
-import com.benseddik.book.user.User;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
-import java.util.Set;
+
 
 @Getter
 @Setter
@@ -31,8 +31,5 @@ public class Role extends AbstractAuditingEntity implements Serializable {
     private Long id;
     @Column(name = "name", nullable = false, unique = true)
     private String name;
-    @ManyToMany(mappedBy = "roles")
-    @JsonIgnore
-    private Set<User> users = new LinkedHashSet<>();
 
 }

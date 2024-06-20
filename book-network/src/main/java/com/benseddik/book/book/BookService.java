@@ -7,7 +7,6 @@ import com.benseddik.book.file.IPicsurApiService;
 import com.benseddik.book.history.BookTransactionHistory;
 import com.benseddik.book.history.IBookTransactionHistoryMapper;
 import com.benseddik.book.history.IBookTransactionHistoryRepository;
-import com.benseddik.book.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,19 +36,17 @@ public class BookService {
     private final IBookMapper bookMapper;
 
     public SavedBookResponse save(BookRequest request, Authentication authentication) {
-        User user = ((User) authentication.getPrincipal());
         Book book = bookMapper.toEntity(request);
-        book.setOwner(user);
         book = bookRepository.save(book);
         log.info("Book saved: {}", book.getUuid());
         return new SavedBookResponse(String.valueOf(book.getUuid()));
     }
 
     public SavedBookResponse update(UUID bookUuid, BookRequest request, Authentication authentication) {
-        User user = ((User) authentication.getPrincipal());
+
         Book book = bookRepository.findByUuid(bookUuid)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found : " + bookUuid.toString()));
-        if (!Objects.equals(book.getOwner().getUuid(), user.getUuid())) {
+        if (!Objects.equals(book.getCreatedBy(), authentication.getName())) {
             throw new OperationNotPermittedException("You cannot update book");
         }
         bookMapper.partialUpdate(request, book);
@@ -66,28 +63,25 @@ public class BookService {
 
 
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication authentication) {
-        User user = ((User) authentication.getPrincipal());
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Book> books = bookRepository.findAllDisplayableBooks(pageable, user.getId());
+        Page<Book> books = bookRepository.findAllDisplayableBooks(pageable, authentication.getName());
         List<BookResponse> bookResponses = books.map(bookMapper::toBookResponse).getContent();
         return new PageResponse<>(bookResponses, books.getNumber(), books.getSize(), books.getTotalElements(),
                 books.getTotalPages(), books.isFirst(), books.isLast());
     }
 
     public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication authentication) {
-        User user = ((User) authentication.getPrincipal());
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Book> books = bookRepository.findAll(withOwnerUuid(user.getUuid()), pageable);
+        Page<Book> books = bookRepository.findAll(withOwnerUuid(authentication.getName()), pageable);
         List<BookResponse> bookResponses = books.map(bookMapper::toBookResponse).getContent();
         return new PageResponse<>(bookResponses, books.getNumber(), books.getSize(), books.getTotalElements(),
                 books.getTotalPages(), books.isFirst(), books.isLast());
     }
 
     public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication authentication) {
-        User user = ((User) authentication.getPrincipal());
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<BookTransactionHistory> allBorrowedBooks =
-                bookTransactionHistoryRepository.findAllBorrowedBooks(pageable, user.getUuid());
+                bookTransactionHistoryRepository.findAllBorrowedBooks(pageable, authentication.getName());
         List<BorrowedBookResponse> bookResponses =
                 allBorrowedBooks.map(iBookTransactionHistoryMapper::toDto).getContent();
         return new PageResponse<>(bookResponses, allBorrowedBooks.getNumber(), allBorrowedBooks.getSize(),
@@ -96,10 +90,9 @@ public class BookService {
     }
 
     public PageResponse<BorrowedBookResponse> findAllReturnedBooks(int page, int size, Authentication authentication) {
-        User user = ((User) authentication.getPrincipal());
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<BookTransactionHistory> allBorrowedBooks =
-                bookTransactionHistoryRepository.findAllReturnedBooks(pageable, user.getUuid());
+                bookTransactionHistoryRepository.findAllReturnedBooks(pageable, authentication.getName());
         List<BorrowedBookResponse> bookResponses =
                 allBorrowedBooks.map(iBookTransactionHistoryMapper::toDto).getContent();
         return new PageResponse<>(bookResponses, allBorrowedBooks.getNumber(), allBorrowedBooks.getSize(),
@@ -108,10 +101,9 @@ public class BookService {
     }
 
     public UUID updateShareableStatus(UUID uuid, Authentication authentication) {
-        User user = ((User) authentication.getPrincipal());
         Book book = bookRepository.findByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found : " + uuid.toString()));
-        if (!Objects.equals(book.getOwner().getUuid(), user.getUuid())) {
+        if (!Objects.equals(book.getCreatedBy(), authentication.getName())) {
             throw new OperationNotPermittedException("You cannot update book shareable status");
         }
         book.setShareable(!book.isShareable());
@@ -120,10 +112,9 @@ public class BookService {
     }
 
     public UUID updateArchivedStatus(UUID uuid, Authentication authentication) {
-        User user = ((User) authentication.getPrincipal());
         Book book = bookRepository.findByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found : " + uuid.toString()));
-        if (!Objects.equals(book.getOwner().getUuid(), user.getUuid())) {
+        if (!Objects.equals(book.getCreatedBy(), authentication.getName())) {
             throw new OperationNotPermittedException("You cannot update book archived status");
         }
         book.setArchived(!book.isArchived());
@@ -137,18 +128,18 @@ public class BookService {
         if (!book.isShareable() || book.isArchived()) {
             throw new OperationNotPermittedException("You cannot borrow this book");
         }
-        User user = ((User) authentication.getPrincipal());
-        if (Objects.equals(book.getOwner().getUuid(), user.getUuid())) {
+
+        if (Objects.equals(book.getCreatedBy(), authentication.getName())) {
             throw new OperationNotPermittedException("You cannot borrow your own book");
         }
         final boolean isAlreadyBorrowed =
-                bookTransactionHistoryRepository.isAlreadyBorrowedByUser(user.getUuid(), uuid);
+                bookTransactionHistoryRepository.isAlreadyBorrowedByUser(authentication.getName(), uuid);
         if (isAlreadyBorrowed) {
             throw new OperationNotPermittedException("You already borrowed this book");
         }
         BookTransactionHistory bookTransactionHistory = BookTransactionHistory.builder()
                 .book(book)
-                .user(user)
+                .userId(authentication.getName())
                 .returned(false)
                 .returnApproved(false)
                 .build();
@@ -161,12 +152,11 @@ public class BookService {
         if (book.isArchived() || !book.isShareable()) {
             throw new OperationNotPermittedException("You cannot return this book");
         }
-        User user = ((User) authentication.getPrincipal());
-        if (Objects.equals(book.getOwner().getUuid(), user.getUuid())) {
+        if (Objects.equals(book.getCreatedBy(), authentication.getName())) {
             throw new OperationNotPermittedException("You cannot return or borrow your own book");
         }
         BookTransactionHistory bookTransactionHistory = bookTransactionHistoryRepository
-                .findByBookUuidAndUserUuid(user.getUuid(), bookUuid)
+                .findByBookUuidAndUserUuid(authentication.getName(), bookUuid)
                 .orElseThrow(() -> new OperationNotPermittedException("You did not borrow this book"));
         bookTransactionHistory.setReturned(true);
         return bookTransactionHistoryRepository.save(bookTransactionHistory).getUuid();
@@ -178,12 +168,11 @@ public class BookService {
         if (book.isArchived() || !book.isShareable()) {
             throw new OperationNotPermittedException("You cannot return this book");
         }
-        User user = ((User) authentication.getPrincipal());
-        if (!Objects.equals(book.getOwner().getUuid(), user.getUuid())) {
+        if (!Objects.equals(book.getCreatedBy(), authentication.getName())) {
             throw new OperationNotPermittedException("You cannot return a book that you did not borrow");
         }
         BookTransactionHistory bookTransactionHistory = bookTransactionHistoryRepository
-                .findByBookUuidAndOwnerUuid(uuid, user.getUuid())
+                .findByBookUuidAndOwnerUuid(uuid, authentication.getName())
                 .orElseThrow(() -> new OperationNotPermittedException(
                         "The book is not returned. You cannot approve its return"));
         bookTransactionHistory.setReturnApproved(true);
@@ -193,15 +182,18 @@ public class BookService {
     public void uploadBookCoverPicture(UUID uuid, MultipartFile file, Authentication authentication) {
         Book book = bookRepository.findByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found : " + uuid.toString()));
-        User user = ((User) authentication.getPrincipal());
-        if (!Objects.equals(book.getOwner().getUuid(), user.getUuid())) {
+        if (!Objects.equals(book.getCreatedBy(), authentication.getName())) {
             throw new OperationNotPermittedException("You cannot update book cover picture");
         }
-        PicsurSuccessResponse picsurSuccessResponse = picsurApiService.uploadImage(file).getBody();
-        if (picsurSuccessResponse == null) {
-            throw new OperationNotPermittedException("Failed to upload book cover picture");
+        if (file.isEmpty()) {
+            book.setBookCover("851dfd89-6ef2-4e9c-8c52-f0783bd1edeb");
+        } else {
+            PicsurSuccessResponse picsurSuccessResponse = picsurApiService.uploadImage(file).getBody();
+            if (picsurSuccessResponse == null) {
+                throw new OperationNotPermittedException("Failed to upload book cover picture");
+            }
+            book.setBookCover(picsurSuccessResponse.getData().getId());
         }
-        book.setBookCover(picsurSuccessResponse.getData().getId());
         bookRepository.save(book);
     }
 }
